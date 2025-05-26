@@ -17,6 +17,8 @@ import AllProducts from "./components/custom/AllProducts";
 import Analytics from "./components/custom/Analytics";
 import Settings from "./components/custom/Settings";
 import Orders from "./components/custom/Orders";
+import About from "./pages/About";
+import FAQSection from "./pages/FAQ";
 
 function App() {
   const router = createBrowserRouter([
@@ -24,6 +26,18 @@ function App() {
       path: "/",
       element: (
      <HomeLayout children={<Home/>}/>
+      ),
+    },
+    {
+      path: "/about",
+      element: (
+     <HomeLayout children={<About/>}/>
+      ),
+    },
+{
+      path: "/faq",
+      element: (
+     <HomeLayout children={<FAQSection/>}/>
       ),
     },
     {

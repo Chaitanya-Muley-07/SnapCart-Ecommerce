@@ -21,8 +21,8 @@ const [isAuthenticated,setIsAuthenticated]=useState(true);
         </div>
        <Link to={"/"} className='flex items-center text-2xl font-bold'>SnapCart</Link>
        <ul className='hidden sm:flex text-xl gap-2'>
-        <Link to="/About">About</Link>
-        <Link to="/About">Faqs</Link>
+        <Link to="/about">About</Link>
+        <Link to="/faq">Faqs</Link>
        
        </ul>
     </nav>
