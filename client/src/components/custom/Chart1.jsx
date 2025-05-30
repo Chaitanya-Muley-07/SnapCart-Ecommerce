@@ -36,7 +36,7 @@ const chartConfig = {
   },
   headset: {
     label: "Headset",
-    color: Colors.customIsabelline,
+    color: "#9acd32",
   },
 };
 
