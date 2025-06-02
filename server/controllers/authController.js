@@ -1,5 +1,6 @@
-const signup=async(req,res)=>{
+const signup = async (req, res) => {
+ const {name,email,password,phone}
+  
+};
 
-}
-
-module.exports={signup};
+module.exports = { signup };

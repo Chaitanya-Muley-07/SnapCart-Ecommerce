@@ -13,6 +13,10 @@ const{readdirSync}=require('fs');
 app.use(cors({origin:process.env.CLIENT_URL}))
 app.use(express.json());
 
+//db connection
+const {connectDb}=require("./db/connection")
+connectDb();
+
 //routes
 readdirSync("./routes").map((route)=>app.use("/api",require(`./routes/${route}`)));
 
