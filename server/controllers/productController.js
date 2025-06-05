@@ -1,4 +1,4 @@
-const Product = require('../models/Product');
+const Product = require("../models/Product");
 const { ROLES } = require("../utils/constants");
 const cloudinary = require("../utils/cloudinary");
 
@@ -41,10 +41,91 @@ const createProduct = async (req, res) => {
       message: "Product added successfully",
       data: product,
     });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+const updateProduct = async (req, res) => {
+  if (req.role !== ROLES.admin) {
+    return res.status(403).json({ success: false, message: "Access Denied" });
+  }
+  try {
+    const { ...data } = req.body;
+    const { id } = req.params;
 
+    const product = await Product.findByIdAndUpdate(id, data, { new: true });
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Product updated successfully",
+      data: product,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
+const deleteProduct = async (req, res) => {
+  if (req.role !== ROLES.admin) {
+    return res.status(403).json({ success: false, message: "Access Denied" });
+  }
+  try {
+    const { id } = req.params;
+
+    const product = await Product.findByIdAndDelete(id);
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Product Deleted successfully",
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+const getProducts = async (req, res) => {
+  try {
+    let { page, limit, category, price, search } = req.query;
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 9;
+    //empty query object creation
+    let query = {};
+    // fields of query
+
+    //category
+    if (category)
+      query.category = category.charAt(0).toUpperCase() + category.slice(1);
+    if (category == "all") delete query.category;
+
+    //search
+
+    //     $regex: search
+    // Tells MongoDB to match name fields using regular expressions.
+
+    // If search = "phone", MongoDB looks for "phone" anywhere in the product name.
+
+    // $options: 'i'
+    // This makes the search case-insensitive.
+
+    // So it matches "Phone", "phone", "PHONE", "PhoNe", etc.
+    if (search) query.name = { $regex: search, $options: "i" };
+
+    //price
+    if (price > 0) query.price = { $lte: price };
+    //fetching
+    const totalProducts=await Product.countDocuments(query);
+    const totalPages=Math.ceil(totalProducts/limit);
+    const products = await Product.find(query).select("name price images rating description blacklisted");
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
 module.exports = { createProduct };
