@@ -17,13 +17,14 @@ const productSchema = mongoose.Schema(
     },
     stock: {
       type: Number,
-      rquired: true,
+      required: true,
     },
-    images: [
+    images: 
       {
+        type:Array,
         required: true,
       },
-    ],
+    
     rating: {
       type: Number,
       default: 5,
