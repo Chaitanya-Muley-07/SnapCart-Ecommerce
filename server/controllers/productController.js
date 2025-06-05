@@ -121,11 +121,122 @@ const getProducts = async (req, res) => {
     //price
     if (price > 0) query.price = { $lte: price };
     //fetching
-    const totalProducts=await Product.countDocuments(query);
-    const totalPages=Math.ceil(totalProducts/limit);
-    const products = await Product.find(query).select("name price images rating description blacklisted");
+    const totalProducts = await Product.countDocuments(query);
+    const totalPages = Math.ceil(totalProducts / limit);
+    // skip for skipping the elements before the current page, limit is for remaining elements
+    const products = await Product.find(query)
+      .select("name price images rating description blacklisted")
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    let newProductsArray = [];
+    products.forEach((product) => {
+      //Send a pure JSON response (without Mongoose overhead)
+      const productObj = product.toObject();
+      productObj.image = productObj.images[0];
+      delete productObj.images;
+      newProductsArray.push(productObj); //
+    });
+    if (!products.length) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No products found" });
+    }
+    return res.status(200).json({
+      success: true,
+      message: "Products fetched",
+      data: newProductsArray,
+      pagination: {
+        totalProducts,
+        totalPages,
+        currentPage: page,
+        pageSize: limit,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-module.exports = { createProduct };
+const getProductByName = async (req, res) => {
+  const { name } = req.params;
+
+  try {
+    const product = await Product.findOne({ name });
+
+    if (!product)
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Product found", data: product });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const blacklistProduct = async (req, res) => {
+  if (req.role !== ROLES.admin) {
+    return res.status(403).json({ success: false, message: "Access Denied" });
+  }
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { blacklisted: true },
+      { new: true }
+    );
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, message: `The product ${product.name} is Blacklisted`, data: product });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+const removeFromBlacklist = async (req, res) => {
+  if (req.role !== ROLES.admin) {
+    return res.status(403).json({ success: false, message: "Access Denied" });
+  }
+
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findByIdAndUpdate(
+      id,
+      { blacklisted: false },
+      { new: true }
+    );
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `The product ${product.name} is removed from blacklist`,
+      data: product,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = {
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  getProductByName,
+  blacklistProduct,
+  removeFromBlacklist,
+  getProducts,
+};
