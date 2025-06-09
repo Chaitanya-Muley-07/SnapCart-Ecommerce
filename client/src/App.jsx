@@ -20,7 +20,8 @@ import Orders from "./components/custom/Orders";
 import About from "./pages/About";
 import FAQSection from "./pages/FAQ";
 import { store } from './redux/store';
-import { Provider } from 'react-redux'
+import { Provider } from 'react-redux';
+import MyOrders from "./pages/MyOrders";
 function App() {
   const router = createBrowserRouter([
     {
@@ -64,6 +65,12 @@ function App() {
       path: "/checkout",
       element: (
            <HomeLayout children={<Checkout/>}/>
+      ),
+    },
+    {
+      path: "/orders",
+      element: (
+           <HomeLayout children={<MyOrders/>}/>
       ),
     },
     {
