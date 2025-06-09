@@ -22,6 +22,7 @@ import FAQSection from "./pages/FAQ";
 import { store } from './redux/store';
 import { Provider } from 'react-redux';
 import MyOrders from "./pages/MyOrders";
+import { Toaster } from "./components/ui/toaster";
 function App() {
   const router = createBrowserRouter([
     {
@@ -145,6 +146,7 @@ function App() {
      
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Provider store={store}>
+          <Toaster/>
         <RouterProvider router={router} />
         </Provider>  
       </ThemeProvider>
