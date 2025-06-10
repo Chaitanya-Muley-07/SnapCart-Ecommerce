@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { act } from "react";
+
 
 const authSlice=createSlice({
     name:"auth",
     initialState:{
         role:localStorage.getItem("role")||"",
-        user:JSON.parse(localStorage.getItem("user"))||"",
-        isAuthenticated:!!localStorage.getItem("token")||null,
+         user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null, // 
+        isAuthenticated: !!localStorage.getItem("token"),
     },
     reducers:{
         setUserLogin:(state,action)=>
