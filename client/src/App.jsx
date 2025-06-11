@@ -23,134 +23,146 @@ import { store } from './redux/store';
 import { Provider } from 'react-redux';
 import MyOrders from "./pages/MyOrders";
 import { Toaster } from "./components/ui/toaster";
+import ProtectedRoute from "./components/custom/ProtectedRoute";
+
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
       element: (
-     <HomeLayout children={<Home/>}/>
+        <ProtectedRoute>
+          <HomeLayout children={<Home />} />
+        </ProtectedRoute>
       ),
     },
     {
       path: "/about",
       element: (
-     <HomeLayout children={<About/>}/>
+        <ProtectedRoute>
+          <HomeLayout children={<About />} />
+        </ProtectedRoute>
       ),
     },
-{
+    {
       path: "/faq",
       element: (
-     <HomeLayout children={<FAQSection/>}/>
+        <ProtectedRoute>
+          <HomeLayout children={<FAQSection />} />
+        </ProtectedRoute>
       ),
     },
     {
       path: "/signup",
       element: (
-      <HomeLayout children={<Signup/>}/>
+        <ProtectedRoute>
+          <HomeLayout children={<Signup />} />
+        </ProtectedRoute>
       ),
     },
     {
       path: "/login",
       element: (
-       <HomeLayout children={<Login />}/>
-         
+        <ProtectedRoute>
+          <HomeLayout children={<Login />} />
+        </ProtectedRoute>
       ),
     },
     {
       path: "/product",
       element: (
-         <HomeLayout children={<Product/>}/>
+        
+          <HomeLayout children={<Product />} />
+        
       ),
     },
     {
       path: "/checkout",
       element: (
-           <HomeLayout children={<Checkout/>}/>
+        <ProtectedRoute>
+          <HomeLayout children={<Checkout />} />
+        </ProtectedRoute>
       ),
     },
     {
       path: "/orders",
       element: (
-           <HomeLayout children={<MyOrders/>}/>
+        <ProtectedRoute>
+          <HomeLayout children={<MyOrders />} />
+        </ProtectedRoute>
       ),
     },
     {
       path: "/admin/login",
       element: (
-        <>
+        <ProtectedRoute>
           <Navbar />
           <AdminLogin />
           <Footer />
-        </>
-      ),
-    },
-{
-      path: "/admin/dashboard",
-      element: (
-        <>
-         <AdminLayout children={<CreateProducts/>}/>
-        </>
-      ),
-    },
-{
-      path: "/admin/dashboard/all-products",
-      element: (
-        <>
-         <AdminLayout children={<AllProducts/>}/>
-        </>
-      ),
-    },
-{
-      path: "/admin/dashboard/orders",
-      element: (
-        <>
-         <AdminLayout children={<Orders/>}/>
-        </>
-      ),
-    },
-{
-      path: "/admin/dashboard/analytics",
-      element: (
-        <>
-         <AdminLayout children={<Analytics/>}/>
-        </>
-      ),
-    },
-{
-      path: "/admin/dashboard/settings",
-      element: (
-        <>
-         <AdminLayout children={<Settings/>}/>
-        </>
+        </ProtectedRoute>
       ),
     },
     {
-      path: "/*",
+      path: "/admin/dashboard",
       element: (
-        <>
-          <Error />
-        </>
+        <ProtectedRoute>
+          <AdminLayout children={<CreateProducts />} />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin/dashboard/all-products",
+      element: (
+        <ProtectedRoute>
+          <AdminLayout children={<AllProducts />} />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin/dashboard/orders",
+      element: (
+        <ProtectedRoute>
+          <AdminLayout children={<Orders />} />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin/dashboard/analytics",
+      element: (
+        <ProtectedRoute>
+          <AdminLayout children={<Analytics />} />
+        </ProtectedRoute>
+      ),
+    },
+    {
+      path: "/admin/dashboard/settings",
+      element: (
+        <ProtectedRoute>
+          <AdminLayout children={<Settings />} />
+        </ProtectedRoute>
       ),
     },
     {
       path: "/success",
       element: (
-        <>
+       
           <Success />
-        </>
+       
       ),
     },
+    {
+      path: "/*",
+      element: <Error />,
+    },
   ]);
+
   return (
-    <> 
-     
+    <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Provider store={store}>
-          <Toaster/>
-        <RouterProvider router={router} />
-        </Provider>  
+          <Toaster />
+          <RouterProvider router={router} />
+        </Provider>
       </ThemeProvider>
-        
     </>
   );
 }

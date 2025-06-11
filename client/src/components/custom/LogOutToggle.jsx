@@ -18,7 +18,14 @@ const LogOutToggle = ({user}) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarFallback className="text-xl dark:text-slate-300">{user?.name.charAt(0).toUpperCase()}</AvatarFallback>
+          {console.log("User in LogoutToggle:", user?.name)}
+          <AvatarFallback className="text-xl dark:text-slate-300"> {user?.name
+    ?.trim()
+    .split(" ")
+    .filter(Boolean) // removes empty strings from extra spaces
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="center">
