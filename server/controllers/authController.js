@@ -46,7 +46,7 @@ const login = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid credentials" });
     }
-
+    
     //corect password
     const token = jwt.sign(
       { id: user._id, role: user.role },
@@ -116,7 +116,7 @@ const adminLogin = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "User loggen in successfully",
+      message: "User logged in successfully",
       token,
       user: {
         id: admin._id,

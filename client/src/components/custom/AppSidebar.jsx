@@ -1,6 +1,10 @@
 import {  ChartBar, FilePlus2, GalleryVerticalEnd, PackageSearchIcon,  Settings } from "lucide-react";
 import {useLocation} from "react-router-dom"
 import { Button } from "@/components/ui/button"
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { setUserLogout } from "../../redux/slices/authSlice";
 import {
   Sidebar,
   SidebarContent,
@@ -14,6 +18,7 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 // Menu items.
 const items = [
   {
@@ -45,7 +50,8 @@ const items = [
 
 const AppSidebar=()=> {
 const {pathname}= useLocation();
-
+const dispatch=useDispatch();
+const {toast}=useToast();
   return (
     <Sidebar>
     <SidebarHeader>
@@ -70,7 +76,12 @@ const {pathname}= useLocation();
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Button>
+        <Button onClick={()=>{
+          dispatch(setUserLogout())
+          toast({
+            title: "Logged out successfully"
+          })
+          }}>
           Logout
         </Button>
       </SidebarFooter>
