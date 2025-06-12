@@ -9,6 +9,7 @@ const changeUsername = async (req, res) => {
   }
   try {
     const { previousUsername, newUsername } = req.body;
+    console.log(previousUsername, newUsername);
     if (!newUsername || !previousUsername) {
       return res
         .status(400)
