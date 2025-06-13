@@ -21,6 +21,9 @@ import {
 import { Textarea } from "../ui/textarea";
 import { Input } from "../ui/input";
 import { Loader2, Upload, X } from "lucide-react";
+import { useToast } from "../../hooks/use-toast";
+import useErrorLogout from "../../hooks/use-error-logout";
+import axios from "axios";
 
 const CreateProducts = () => {
   const fileInputRef = useRef(null);
@@ -28,6 +31,8 @@ const CreateProducts = () => {
   const [colors, setColors] = useState([]);
   const [images, setImages] = useState([]);
   const [isLoading,setIsLoading]=useState(false);
+  const {toast} = useToast();
+  const {handleErrorLogout} = useErrorLogout();
 
   const addColor = () => {
     if (!colors.includes(currentColor)) {
@@ -43,7 +48,90 @@ const CreateProducts = () => {
     setImages(images.filter((_, index) => index !== indexToRemove));
   };
 
-  const handleImageUpload = () => {};
+  const handleImageUpload =  (e) => {
+       const files=e.target.files;
+       if(files){
+        const newImages=Array.from(files).map((file)=>{
+          return {
+            preview:URL.createObjectURL(file),
+            file,
+          };
+        });
+        setImages((prevImages) => [...prevImages, ...newImages]).slice(0,4); // Limit to 4 images
+        e.target.value = null; // Reset the input value
+       }
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    const name = e.target.name.value;
+    const description = e.target.description.value;
+    const price=e.target.price.value;
+    const stock = e.target.stock.value;
+    const category = e.target.category.value;
+    if(!name || !description ||!category|| !price || !stock || colors.length === 0 || images.length === 0) {
+      return toast({
+        title: "Error",
+        description: "Please fill all the fields and add at least one color and one image.",
+        variant: "destructive",
+      });
+    }
+    if(name.trim()==="" || description.trim()==="" || category.trim()==="" || price<=0|| stock<=0){
+      return toast({
+        title: "Error",
+        description: "Please fill all the fields with valid values.",
+        variant: "destructive",
+      });
+    }
+    if(images.length<4){
+      return toast({
+        title: "Error",
+        description: "Please upload at least 4 images.",
+        variant: "destructive",
+      });
+    }
+    setIsLoading(true);
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description); 
+    formData.append("price", price);
+    formData.append("stock", stock);
+    formData.append("category", category);
+    colors.forEach((color) => formData.append("colors", color));
+    images.forEach((image) => {
+      formData.append("images", image.file);
+    });
+    try{
+      const response=await axios.post(import.meta.env.VITE_API_URL + "/create-product",formData,{
+        headers:{
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+
+      );
+      const data=response.data;
+      toast({
+        title: " Product Added Successfully",
+        description:data.message,
+       
+       });
+    }catch(error){
+      
+      return handleErrorLogout(error,"Failed to add product");
+      
+    }finally{
+      setIsLoading(false);
+    }
+
+  }
+  if(isLoading){
+    return(
+      <div className="flex items-center justify-center h-screen">
+        <Loader2 className="h-12 w-12 animate-spin"/>
+      </div>
+    )
+  }
   return (
     <div className="w-full max-w-2xl -z-10">
       <CardHeader>
@@ -55,7 +143,7 @@ const CreateProducts = () => {
       </CardHeader>
 
 
-      <form >
+      <form  onSubmit={onSubmit} className="space-y-4">
         <div className="flex flex-col lg:flex-row lg:w-[70vw]">
           <CardContent className="w-full">
             <div className="space-y-2">
@@ -165,10 +253,12 @@ const CreateProducts = () => {
             <div className="space-y-2">
               <Label htmlFor="images">Product Images</Label>
               <div className="flex flex-wrap gap-4">
-                <div className="relative">
-                  <img
-                    src="https://images.pexels.com/photos/3587478/pexels-photo-3587478.jpeg?auto=compress&cs=tinysrgb&w=600"
-                    alt={`Product image ${0}`}
+              {images.map((image, index) => (
+                <div key={index} className="relative">
+
+                   <img
+                    src={image?.preview}
+                    alt={`Product image ${index+1}`}
                     width={100}
                     height={100}
                     className="rounded-md object-cover"
@@ -183,16 +273,19 @@ const CreateProducts = () => {
                     <span className="sr-only">Remove image</span>
                   </Button>
                 </div>
-                {/* {images.length > 4 && ( */}
-                  <Button
+                
+               ))}
+                
+                {images.length<4&&(<Button
                     onClick={() => fileInputRef.current?.click()}
                     className="w-[100px] h-[100px]"
                     variant="outline"
                   >
                     <Upload className="h-6 w-6" />
                     <span className="sr-only">Upload Image</span>
-                  </Button>
-                {/* )} */}
+                  </Button>)}
+                  
+               
               </div>
               <Input
                 type="file"

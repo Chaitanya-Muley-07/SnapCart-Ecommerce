@@ -30,6 +30,8 @@ const Login = () => {
         password: password.value,
       });
       const data = await res.data;
+     
+      
       dispatch(
         setUserLogin({
           user: data.user,
@@ -44,7 +46,7 @@ const Login = () => {
       navigate("/");
     } catch (error) {
       toast({
-        title: error.data.response.message,
+         title: error.response?.data?.message,
         variant: "destructive",
       });
     }
