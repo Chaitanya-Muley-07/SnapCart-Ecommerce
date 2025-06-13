@@ -30,8 +30,96 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { useToast } from "../../hooks/use-toast";
+import { setProducts } from "../../redux/slices/productSlice";
+import useErrorLogout from "../../hooks/use-error-logout";
+import { ToastAction } from "@/components/ui/toast"
 
 const AllProducts = () => {
+
+
+
+  const { products } = useSelector((state) => state.product);
+  const [category, setCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const[isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const { toast } = useToast();
+  const dispatch = useDispatch();
+  const {handleErrorLogout} = useErrorLogout();
+
+
+  useEffect(() => {
+    const getFilterProducts = async () => {
+      const response = await axios.get(
+        import.meta.env.VITE_API_URL +
+          `/get-products?category=${category}&search=${searchTerm}`
+      );
+      const data = response.data;
+      dispatch(setProducts(data.data));
+    };
+    getFilterProducts();
+  }, [searchTerm, category]);
+
+
+ const blacklistProduct = async (id) => {
+  try{
+    const response = await axios.put(
+      import.meta.env.VITE_API_URL + `/blacklist-product/${id}`,null,{
+        headers:{
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          
+        }
+      }
+      
+    );
+    const data = response.data;
+    if (data.success) {
+      toast({
+        title: "Success",
+        description: data.message,
+        action:<ToastAction altText="Undo Changes" onClick={() => removeFromBlacklist(id)}>Undo Changes</ToastAction>
+      });
+      // Optionally, you can refresh the product list or update the state
+        dispatch(setProducts(
+      products.map((p) =>
+        p._id === id ? { ...p, blacklisted: true } : p
+      )
+    ));
+    }
+  } catch (error) {
+    handleErrorLogout(error, "Failed to blacklist product");
+  }
+ }
+
+ const removeFromBlacklist = async (id) => {
+  try {
+    const response = await axios.put(
+      import.meta.env.VITE_API_URL + `/remove-from-blacklist/${id}`, null, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      const data = response.data;
+       dispatch(setProducts(
+      products.map((p) =>
+        p._id === id ? { ...p, blacklisted: false } : p
+      )
+    ));
+      if (data.success) {
+        toast({
+          title: "Success",
+          description: data.message,
+        });
+      }
+    } catch (error) {
+      handleErrorLogout(error, "Failed to remove product from blacklist");
+    }
+  };
+
   return (
     <div className="mx-auto px-4 sm:px-8 -z-10">
       <h1 className="text-3xl font-bold mb-8">Our Products</h1>
@@ -51,6 +139,8 @@ const AllProducts = () => {
                 id="search"
                 placeholder="Search by Name or Description"
                 className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
               <Search
                 size={20}
@@ -60,7 +150,11 @@ const AllProducts = () => {
           </div>
           <div className="w-48 ">
             <Label htmlFor="category">Category</Label>
-            <Select className="mt-3">
+            <Select
+              className="mt-3"
+              value={category}
+              onValueChange={(value) => setCategory(value)}
+            >
               <SelectTrigger className="w-[180px]" id="category">
                 <SelectValue placeholder="Select Category" />
               </SelectTrigger>
@@ -77,34 +171,54 @@ const AllProducts = () => {
           </div>
         </form>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mx-2 sm:mx-0">
-        <Card className="flex flex-col">
-          <div className=" relative">
-            <img
-              src="https://images.pexels.com/photos/4158/apple-iphone-smartphone-desk.jpg?auto=compress&cs=tinysrgb&w=600"
-              alt=""
-              className="rounded-t-lg"
-            />
-          </div>
-          <CardContent className="p-4 flex-grow">
-            <h3 className="text-lg font-semibold mb-2">Ant Esports keyboard</h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos,
-              omnis?
-            </p>
-            <p className="text-lg font-bold  mb-4">₹560.00</p>
-          </CardContent>
-          <CardFooter className="p-4 pt-0 flex justify-between">
-            <Button variant="outline">
-              <Edit />
-              Edit
-            </Button>
-            <Button> Blacklist Product</Button>
-          </CardFooter>
-        </Card>
-      </div>
+      {products?.length === 0 ? (
+        <p>No products found,try adjusting your search criteria.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mx-2 sm:mx-0">
+          {
+            products?.map((product) => (
+              <Card className="flex flex-col" key={product._id}>
+            <div className=" relative">
+              <img
+                src={product?.image.url}
+                alt={product.name}
+                className="rounded-t-lg w-full h-auto object-cover"
+              />
+            </div>
+            <CardContent className="p-4 flex-grow">
+              <h3 className="text-lg font-semibold mb-2">
+                {product?.name.length>20
+                  ? product?.name.slice(0, 20) + "..."
+                  : product?.name}
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                {product?.description.length > 100
+                  ? product?.description.slice(0, 100) + "..."
+                  : product.description}
+              </p>
+              <p className="text-lg font-bold  mb-4">₹{product?.price.toFixed(2)}</p>
+            </CardContent>
+            <CardFooter className="p-4 pt-0 flex justify-between">
+              <Button variant="outline">
+                <Edit />
+                Edit
+              </Button>
+              <Button onClick={()=>{
+                !product.blacklisted ? blacklistProduct(product._id) : removeFromBlacklist(product._id);
+              }}>
+                {
+                  !product.blacklisted ? "Blacklist Product" : "Remove from Blacklist"
+                }
+              </Button>
+            </CardFooter>
+          </Card>
+            ))
+          }
+          
+        </div>
+      )}
 
-      <Dialog >
+      <Dialog>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>Edit Product</DialogTitle>
