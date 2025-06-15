@@ -114,7 +114,6 @@ const CreateProducts = () => {
       toast({
         title: " Product Added Successfully",
         description:data.message,
-       
        });
     }catch(error){
       
