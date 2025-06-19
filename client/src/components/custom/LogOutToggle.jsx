@@ -18,7 +18,7 @@ const LogOutToggle = ({user}) => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          {console.log("User in LogoutToggle:", user?.name)}
+         
           <AvatarFallback className="text-xl dark:text-slate-300"> {user?.name
     ?.trim()
     .split(" ")

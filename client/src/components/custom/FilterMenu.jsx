@@ -29,7 +29,7 @@ const FilterMenu = () => {
 
    useEffect(()=>{
        const getFilterProducts=async()=>{
-        console.log("URL:", `${import.meta.env.VITE_API_URL}/get-products?category=${category}&price=${price}&search=${search}`);
+      
 
          const res=await axios.get(import.meta.env.VITE_API_URL+`/get-products?category=${category}&price=${price}&search=${search}`);
          const data=await res.data;

@@ -33,7 +33,7 @@ const ProductCard = ({
          </div> 
           <span>₹{price}</span>
         </div>
-        <LinkButton to={`/product`} text="View Product" />
+        <LinkButton to={`/product/${name.split(" ").join("-")}`} text="View Product" />
       </div>
     </div>
     

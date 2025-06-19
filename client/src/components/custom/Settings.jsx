@@ -97,7 +97,7 @@ const Settings = () => {
         description: data.message,
       });
     } catch (error) {
-      console.error("❌ CHANGE USERNAME ERROR:", error);
+     
       if (error.response) {
         console.error("🌐 Response status:", error.response.status);
         console.error("📨 Response data:", error.response.data);

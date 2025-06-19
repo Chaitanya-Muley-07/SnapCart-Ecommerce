@@ -5,6 +5,7 @@ import { Colors } from "../constants/color";
 import {Input} from "../components/ui/input"
 import { Button } from "../components/ui/button";
 import ReviewComponent from "../components/custom/ReviewComponent";
+import { useParams } from "react-router-dom";
 
 
 const imagesArray = [
@@ -30,7 +31,8 @@ const productStock=10;
 
 
 const Product = () => {
-
+  const {productName}=useParams();
+  console.log("Product Name:", productName);
   const [productQuantity,setProductQuantity]=useState(10);
   const [pincode,setPinCode]=useState("");
   const [availibilityMessage,setAvailabilityMessage]=useState("");

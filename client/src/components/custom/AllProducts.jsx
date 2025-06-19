@@ -130,17 +130,17 @@ const AllProducts = () => {
   };
 
   const handleEdit = async (product) => {
-      console.log("Opening edit modal with category:", product.category);
+     
 
     setEditingProduct(product);
     setIsEditModalOpen(true);
     setEditFormCategory(product.category);
-    console.log("Editing product:", product);
+    
   };
 
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-      console.log("Updated product category before sending:", editingProduct.category);
+     
     const formData = new FormData(e.target);
     const updatedProduct = {
       ...editingProduct,
