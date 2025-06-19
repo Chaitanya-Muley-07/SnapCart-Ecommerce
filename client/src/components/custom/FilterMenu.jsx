@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useEffect, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -7,6 +7,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input"
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import { setProducts } from "../../redux/slices/productSlice";
 
 const categoryData = {
   trigger: "Category",
@@ -22,6 +25,20 @@ const FilterMenu = () => {
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
   const [search, setSearch] = useState("");
+  const dispatch=useDispatch();
+
+   useEffect(()=>{
+       const getFilterProducts=async()=>{
+        console.log("URL:", `${import.meta.env.VITE_API_URL}/get-products?category=${category}&price=${price}&search=${search}`);
+
+         const res=await axios.get(import.meta.env.VITE_API_URL+`/get-products?category=${category}&price=${price}&search=${search}`);
+         const data=await res.data;
+         dispatch(setProducts(data.data));
+
+        };
+        getFilterProducts();
+   },[category, price, search]);
+
 
   return (
     <div className="w-[93vw] flex flex-col sm:flex-row justify-between items-center mx-auto my-10 gap-3 sm:gap-0">
@@ -42,7 +59,7 @@ const FilterMenu = () => {
           </SelectContent>
         </Select>
         {/* for price */}
-        <Select onValueChange={(value) => setCategory(value)}>
+        <Select onValueChange={(value) => setPrice(value)}>
           <SelectTrigger id={priceData.trigger}>
             <SelectValue placeholder={priceData.trigger} />
           </SelectTrigger>

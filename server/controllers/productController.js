@@ -101,9 +101,9 @@ const getProducts = async (req, res) => {
     // fields of query
 
     //category
-    if (category)
-      query.category = category.charAt(0).toUpperCase() + category.slice(1);
-    if (category == "all") delete query.category;
+   if (category && category.toLowerCase() !== "all") {
+  query.category = category.toLowerCase();
+}
 
     //search
 
@@ -119,7 +119,8 @@ const getProducts = async (req, res) => {
     if (search) query.name = { $regex: search, $options: "i" };
 
     //price
-    if (price > 0) query.price = { $lte: price };
+    if (Number(price) > 0) query.price = { $lte: Number(price) };
+    console.log(query);
     //fetching
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);

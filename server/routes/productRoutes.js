@@ -7,7 +7,7 @@ const upload = require('../middlewares/multer');
 
 router.post("/create-product",verifyToken,upload.array('images',4),createProduct);
 
-router.put("/update-product",verifyToken,updateProduct);
+router.put("/update-product/:id",verifyToken,updateProduct);
 
 router.delete("/delete-product/:id",verifyToken,deleteProduct);
 

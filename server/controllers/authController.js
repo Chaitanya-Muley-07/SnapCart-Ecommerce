@@ -116,7 +116,7 @@ const adminLogin = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: "User logged in successfully",
+      message: "Admin logged in successfully",
       token,
       user: {
         id: admin._id,

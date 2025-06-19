@@ -68,7 +68,7 @@ function App() {
       ),
     },
     {
-      path: "/product",
+      path: "/product/:productName",
       element: (
         
           <HomeLayout children={<Product />} />
