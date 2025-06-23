@@ -11,11 +11,10 @@ import { setProducts } from "../redux/slices/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "../hooks/use-toast";
 import { addToCart } from "../redux/slices/cartSlice";
-
-
+import useRazorpay from "../hooks/use-razorpay";
 
 const Product = () => {
-  const {toast} = useToast();
+  const { toast } = useToast();
   const { productName } = useParams();
   const navigate = useNavigate();
   const [productQuantity, setProductQuantity] = useState(1);
@@ -28,8 +27,8 @@ const Product = () => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [productColor, setProductColor] = useState("");
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const dispatch=useDispatch();
-
+  const dispatch = useDispatch();
+  const { generatePayment, verifyPayment } = useRazorpay();
   useEffect(() => {
     const fetchProductByName = async () => {
       try {
@@ -49,63 +48,98 @@ const Product = () => {
     return Math.round(price / 6);
   };
 
- const checkAvailability = async () => {
-  if (pincode.trim() === "") {
-    setAvailabilityMessage("Please enter a valid pincode.");
-    return;
-  }
+  const checkAvailability = async () => {
+    if (pincode.trim() === "") {
+      setAvailabilityMessage("Please enter a valid pincode.");
+      return;
+    }
 
-  try {
-    const res = await axios.get(
-      import.meta.env.VITE_API_URL + `/get-pincode/${pincode}`
+    try {
+      const res = await axios.get(
+        import.meta.env.VITE_API_URL + `/get-pincode/${pincode}`
+      );
+
+      const data = await res.data;
+      console.log("API Response:", data); // debug log
+
+      setAvailabilityMessage(data.message);
+    } catch (error) {
+      console.error("Error checking pincode availability:", error);
+
+      setAvailabilityMessage(
+        error.response?.data?.message || "Server error. Please try again later."
+      );
+    }
+  };
+
+  const handleBuyNow = async () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    if (productQuantity > product.stock) {
+      toast({
+        title: "Product out of stock",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (product.blacklisted) {
+      toast({
+        title: "Product isn't available for purchase",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (productColor === "") {
+      toast({
+        title: "Please select a color",
+        variant: "destructive",
+      });
+      return;
+    }
+    const order = await generatePayment(product.price * productQuantity);
+    await verifyPayment(
+      order,
+      [{ _id: product._id, quantity: productQuantity, color: productColor }],
+      address
+    );
+    setPurchaseProduct(false);
+
+  };
+
+  const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      navigate("/login");
+      return;
+    }
+    if (productColor === "") {
+      toast({
+        title: "Please select a color",
+
+        variant: "destructive",
+      });
+      return;
+    }
+
+    dispatch(
+      addToCart({
+        _id: product._id,
+        name: product.name,
+        price: product.price,
+        quantity: productQuantity,
+        color: productColor,
+        image: product.images[0]?.url,
+        stock: product.stock,
+        blacklisted: product.blacklisted,
+      })
     );
 
-    const data =await res.data;
-    console.log("API Response:", data); // debug log
-
-    setAvailabilityMessage(data.message);
-  } catch (error) {
-    console.error("Error checking pincode availability:", error);
-    
-    
-    setAvailabilityMessage(
-      error.response?.data?.message || "Server error. Please try again later."
-    );
-  }
-};
- 
-const handleAddToCart = () => {
-  if (!isAuthenticated) {
-    navigate("/login");
-    return;
-  }
-   if(productColor===""){
+    setProductQuantity(1);
     toast({
-      title: "Please select a color",
-     
-      variant: "destructive",
+      title: "Product added to cart successfully",
     });
-    return;
-  }
-
-
-  dispatch(addToCart({
-    _id: product._id,
-    name: product.name,
-    price: product.price,
-    quantity: productQuantity,
-    color: productColor,
-    image:product.images[0]?.url,
-    stock: product.stock,
-    blacklisted: product.blacklisted,
-  }));
-
-  setProductQuantity(1);
-  toast({
-    title: "Product added to cart successfully",
-    
-  });
-}
+  };
 
   return (
     <>
@@ -247,7 +281,7 @@ const handleAddToCart = () => {
                     placeholder="Enter Your Address Here..."
                     onChange={(e) => setAddress(e.target.value)}
                   />
-                  <Button>Confirm Order </Button>
+                  <Button onClick={handleBuyNow}>Confirm Order </Button>
                 </div>
               )}
             </div>

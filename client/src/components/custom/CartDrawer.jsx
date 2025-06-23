@@ -50,8 +50,8 @@ const CartDrawer = () => {
           )}
         </div>
         <DrawerFooter>
-          <Button>CheckOut</Button>
-          
+          <Button >CheckOut</Button>
+
         </DrawerFooter>
       </DrawerContent>
     </Drawer>

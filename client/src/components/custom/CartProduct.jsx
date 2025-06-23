@@ -10,6 +10,8 @@ import {
   emptyCart,
 } from "../../redux/slices/cartSlice";
 import { useNavigate } from "react-router-dom";
+import useRazorpay from "../../hooks/use-razorpay";
+
 const CartProduct = ({
   name,
   image,
@@ -24,6 +26,7 @@ const CartProduct = ({
   const dispatch = useDispatch();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const {generatePayment,verifyPayment}=useRazorpay();
   const { isAuthenticated } = useSelector((state) => state.auth);
   const handleBuyNow =async () => {
    if(!isAuthenticated) {
@@ -45,6 +48,18 @@ const CartProduct = ({
       });
       return;
     }
+    if(color==="")
+    {
+      toast({
+        title: "Please select a color",
+        variant: "destructive",
+      });
+      return;
+    }
+     const order=await generatePayment(price*quantity);
+     await verifyPayment(order, [{_id,quantity,color}], "123,main street,delhi");
+
+
   }
   return (
     <div className="border w-fit rounded-2xl overflow-clip grid z-1 relative hover:shadow-md">
