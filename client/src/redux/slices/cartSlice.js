@@ -30,7 +30,7 @@ const cartSlice = createSlice({
     removeFromCart: (state, action) => {
       const itemToRemove = action.payload;
       const existingItemIndex = state.cartItems.findIndex((item) => {
-        return item._id === newItem._id;
+        return item._id === itemToRemove._id;
       });
       if (existingItemIndex === -1) {
         return;

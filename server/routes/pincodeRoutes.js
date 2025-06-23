@@ -5,5 +5,5 @@ const router=express.Router();
 
 
 router.post("/add-pincode",verifyToken,addPincode);
-router.get("/get-pincode/:pincode",verifyToken,getPincode);
+router.get("/get-pincode/:pincode",getPincode);
 module.exports=router;
