@@ -6,10 +6,14 @@ const getOrdersByUserId = async (req, res) => {
   const userId = req.id;
 
   try {
-    const orders = await Order.find({ userId }).populate(
-      "products.id",
-      "name price images category"
-    );
+     const orders = await Order.find({ userId })
+      .populate({
+        path: "products.id",
+        select: "name price images category"
+      })
+      .lean(); // Add lean() for better performance
+
+    console.log("Orders with populated products:", JSON.stringify(orders, null, 2));
 
     if (!orders || orders.length === 0) {
       return res

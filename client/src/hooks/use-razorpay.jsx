@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useToast } from "./use-toast";
 import { useNavigate } from "react-router-dom";
-import { verify } from "jsonwebtoken";
+
 
 const useRazorpay = () => {
   const { toast } = useToast();
@@ -9,6 +9,7 @@ const useRazorpay = () => {
 
   const generatePayment = async (amount) => {
     try {
+      console.log("generatePayment amount:", amount);
       const res = await axios.post(
         import.meta.env.VITE_API_URL + "/generate-payment",
         { amount },
@@ -54,6 +55,8 @@ const useRazorpay = () => {
       ...options,
       image: "https://www.pexels.com/photo/flat-screen-monitor-1714204/",
       handler: async (response) => {
+        console.log("Payment handler response:", response);
+
         try {
           const res = await axios.post(
             import.meta.env.VITE_API_URL + "/verify-payment",
@@ -92,8 +95,9 @@ const useRazorpay = () => {
         color: "#3399cc",
       },
     });
+    paymentObject.open();
   };
 
-  return { generatePayment,verifyPayment};
+  return { generatePayment, verifyPayment };
 };
 export default useRazorpay;

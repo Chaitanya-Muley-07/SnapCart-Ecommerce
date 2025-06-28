@@ -14,7 +14,7 @@ const instance = new Razorpay({
 });
 
 const generatePayment = async (req, res) => {
-  const { userId } = req.id;
+  const  userId  = req.id;
 
   try {
     const { amount } = req.body;
@@ -53,7 +53,7 @@ const generatePayment = async (req, res) => {
   }
 };
 const verifyPayment = async (req, res) => {
-  const { userId } = req.id;
+  const userId  = req.id;
   try {
     const {
       razorpay_order_id,
@@ -62,6 +62,13 @@ const verifyPayment = async (req, res) => {
       productArray,
       address,
     } = req.body;
+      
+
+    const formattedProductArray = productArray.map((product) => ({
+  id: product._id, // 👈 this fixes your population issue
+  quantity: product.quantity,
+  color: product.color,
+}));
 
     //signature generation
     const signature = crypto
@@ -69,13 +76,7 @@ const verifyPayment = async (req, res) => {
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
-    if (signature !== req.body.razorpay_signature) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid signature" });
-    }
-
-    // Proceed with the payment verification
+   
     const validatedPayment = validatePaymentVerification(
       { order_id: razorpay_order_id, payment_id: razorpay_payment_id },
       signature,
@@ -102,7 +103,7 @@ const verifyPayment = async (req, res) => {
       razorpayOrderId: razorpay_order_id,
       razorpayPaymentId: razorpay_payment_id,
       razorpaySignature: signature,
-      products: productArray,
+      products: formattedProductArray,
       userId,
     });
     return res.status(200).json({

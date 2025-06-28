@@ -98,14 +98,24 @@ const Product = () => {
       });
       return;
     }
-    const order = await generatePayment(product.price * productQuantity);
+    const amount = Number(product.price) * productQuantity;
+    console.log(
+      "Sending amount to backend:",
+      product.price,
+      "*",
+      productQuantity,
+      "=",
+      amount
+    );
+
+    const order = await generatePayment(amount);
+
     await verifyPayment(
       order,
       [{ _id: product._id, quantity: productQuantity, color: productColor }],
       address
     );
     setPurchaseProduct(false);
-
   };
 
   const handleAddToCart = () => {

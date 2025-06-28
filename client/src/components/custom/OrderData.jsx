@@ -8,20 +8,24 @@ const OrderData = ({
   status = "pending",
   createdAt = "2021-09-01",
   updatedAt = "2021-09-01",
+  products,
 }) => {
     const color = Colors.customYellow;
+    console.log("response coming:",products);
   return (
     <Card className="grid gap-2 p-3">
-  <div className="flex flex-col sm:flex-row justify-between sm:items-center border p-3 rounded-lg bg-gray-100 dark:bg-zinc-900">
+      {
+        products.map((product) => (
+          <div key={product._id} className="flex flex-col sm:flex-row justify-between sm:items-center border p-3 rounded-lg bg-gray-100 dark:bg-zinc-900">
     <div className="flex items-center gap-2">
       <img
-        src="https://images.pexels.com/photos/30154480/pexels-photo-30154480.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load"
-        alt=""
+        src={product?.images?.[0].url}
+        alt={product?.name}
         className="w-20 h-20 rounded-lg"
       />
       <div className="grid gap-1">
         <h1 className="font-semibold text-sm sm:text-lg">
-          Mechanical keyboard with ghosting keys
+          {product?.name}
         </h1>
         <p className="flex text-xs sm:text-md gap-2 sm:gap-2 text-gray-500 sm:my-0">
             <span style={{ backgroundColor: "white"}} className="font-semibold">
@@ -43,6 +47,9 @@ const OrderData = ({
       <p className="dark:text-customYellow text-end ">Qty:1</p>
     </div>
   </div>
+        ))
+
+      }
  
  
   <div className="flex flex-col sm:flex-row justify-between sm:itmes-center">
