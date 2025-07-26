@@ -65,24 +65,22 @@ const getOrdersByUserId = async (req, res) => {
 //   }
 // };
 const getAllOrders = async (req, res) => {
-    console.log("✅ Step 1: Function started");
+    
     
     try {
-        console.log("✅ Step 2: Inside try block");
+       
         
         // Role check
         if (req.role !== 'admin') {
-            console.log("❌ Step 3: Role check failed");
+            
             return res.status(403).json({
                 success: false,
                 message: "you are not authorized to perform this resource"
             });
         }
-        console.log("✅ Step 3: Role check passed");
+       
         
-        console.log("✅ Step 4: About to query database");
         
-        // ✅ Add the actual database queries here
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit;
@@ -110,11 +108,9 @@ const getAllOrders = async (req, res) => {
             hasPrev: page > 1
         };
         
-        console.log("✅ Step 5: Database query completed");
-        console.log("Found orders:", orders.length);
-        console.log("Total orders:", totalOrders);
         
-        console.log("✅ Step 6: Sending response");
+        
+        
         res.status(200).json({
             success: true,
             data: orders,
@@ -122,7 +118,7 @@ const getAllOrders = async (req, res) => {
         });
         
     } catch (error) {
-        console.log("❌ Caught error:", error);
+        console.log("Caught error:", error);
         res.status(500).json({ success: false, message: error.message });
     }
 };
@@ -159,25 +155,19 @@ const getAllOrders = async (req, res) => {
 //   }
 // };
 const updateOrderStatus = async (req, res) => {
-  // ✅ Debug logs first
-  console.log("=== updateOrderStatus DEBUG ===");
-  console.log("req.role:", req.role);
-  console.log("typeof req.role:", typeof req.role);
-  console.log("ROLES.admin:", ROLES.admin);
-  console.log("typeof ROLES.admin:", typeof ROLES.admin);
-  console.log("req.role === ROLES.admin:", req.role === ROLES.admin);
-  console.log("req.role === 'admin':", req.role === 'admin');
+  
+ 
 
-  // ✅ Use direct string comparison instead
+
   if (req.role !== 'admin') {
-    console.log("❌ Authorization failed");
+    console.log(" Authorization failed");
     return res.status(403).json({
       success: false,
       message: "You are not authorized to perform this resource",
     });
   }
 
-  console.log("✅ Authorization passed");
+ 
 
   const { paymentId } = req.params;
   const { status } = req.body;
