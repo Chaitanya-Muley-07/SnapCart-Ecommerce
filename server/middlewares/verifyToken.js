@@ -15,8 +15,8 @@ const verifyToken=(req,res,next)=>{
             {
                 return res.status(400).json({success:false,message:"Invalid token"});
             }
-            req.id=user.id;
-            req.role=user.role;
+            req.id = user.id;
+req.role = user.user?.role || user.role; // ✅ Check nested role first
             next();
         })
     }catch(error)

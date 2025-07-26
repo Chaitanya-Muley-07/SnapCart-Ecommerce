@@ -120,7 +120,7 @@ const getProducts = async (req, res) => {
 
     //price
     if (Number(price) > 0) query.price = { $lte: Number(price) };
-    console.log(query);
+   
     //fetching
     const totalProducts = await Product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);

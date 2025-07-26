@@ -65,7 +65,7 @@ const verifyPayment = async (req, res) => {
       
 
     const formattedProductArray = productArray.map((product) => ({
-  id: product._id, // 👈 this fixes your population issue
+  id:  product.id || product._id, // 👈 this fixes your population issue
   quantity: product.quantity,
   color: product.color,
 }));

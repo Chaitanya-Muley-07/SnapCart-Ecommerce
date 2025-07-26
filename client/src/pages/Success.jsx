@@ -1,22 +1,33 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useToast } from "../hooks/use-toast";
 
 const Success = () => {
   const [count, setCount] = useState(5);
-
+  const { toast } = useToast();
+  useEffect(() => {
+    toast({
+      title: "Payment Successful !",
+      description: "Your payment has been processed successfully.",
+      variant: "success",
+    });
+  }, [toast]);
   useEffect(() => {
     const interval = setInterval(
       () => {
-      setCount((prev) => prev - 1);
-            }, 1000);
+        setCount((prev) => prev - 1);
+      },
+      1000
+    );
 
 
-      setTimeout(()=>{
-    window.location.href="/";
-  },5000)
+    const timeout = setTimeout(() => {
+      window.location.href = "/";
+    }, 5000);
 
-    return () =>{ clearInterval(interval)
-      clearTimeout(timeout)
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
     };
   }, []);
 

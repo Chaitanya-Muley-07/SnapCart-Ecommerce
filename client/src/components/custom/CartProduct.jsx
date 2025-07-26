@@ -69,7 +69,7 @@ const CartProduct = ({
         className="w-[30rem] sm:w-[20rem] h-[20rem] object-cover rounded-t-2xl"
       />
       <div className="px-3 grid gap-1 py-2 absolute bg-white dark:bg-zinc-900 w-full bottom-0 rounded-xl">
-        <h4 className="text-md text-yellow-400">{name}</h4>
+        <h4 className="text-md text-yellow-400">{name.slice(0, 50)}...</h4>
         <span className="text-md font-semibold">Price: ₹{price}</span>
         <div className="flex justify-between my-2">
           <div className="flex items-center gap-3">

@@ -24,6 +24,7 @@ const orderSchema=mongoose.Schema(
       },
       products:[
         {
+          _id: false,
             // one single instance of product ordered
             id:{
                 type:mongoose.Schema.Types.ObjectId,

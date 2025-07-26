@@ -17,6 +17,7 @@ const MyOrders = () => {
           }
         });
         const data = response.data;
+        console.log("My Orders:", data);
         setOrders(data.data);
       } catch (error) {
         handleErrorLogout(error);
