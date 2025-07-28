@@ -37,7 +37,6 @@ import { useToast } from "../../hooks/use-toast";
 import { setProducts } from "../../redux/slices/productSlice";
 import useErrorLogout from "../../hooks/use-error-logout";
 import { ToastAction } from "@/components/ui/toast";
-import { set } from "mongoose";
 
 const AllProducts = () => {
   const { products } = useSelector((state) => state.product);
