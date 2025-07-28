@@ -2,13 +2,14 @@ import { React, useState } from "react";
 import { Link } from "react-router-dom";
 import { ModeToggle } from "./ModeToggle";
 import CartDrawer from "./CartDrawer";
-
+import { useNavigate } from "react-router-dom";
 import { User } from "lucide-react";
 import LogOutToggle from "./LogOutToggle";
 import { useSelector } from "react-redux";
+import { Button } from "../ui/button";
 
 const Navbar = () => {
-
+ const navigate = useNavigate();
  const {isAuthenticated,user}=useSelector((state) => state.auth);
   return (
     <nav className="flex justify-between items-center px-8 py-5 border-b dark:bg-zinc-900">
@@ -27,10 +28,14 @@ const Navbar = () => {
             />
           </Link>
         )}
+        <Button className="rounded-full bg-zinc-600 text-white hover:bg-zinc-700 transition-all ease-in-out" onClick={() => navigate("/admin/login")}>
+        <h1>Admin</h1>
+      </Button>
       </div>
       <Link to={"/"} className="flex items-center text-2xl font-bold">
         SnapCart
       </Link>
+      
       <ul className="hidden sm:flex text-xl gap-2">
         <li>
           <Link to="/about">About</Link>

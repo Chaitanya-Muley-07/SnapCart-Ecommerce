@@ -3,8 +3,29 @@ import { SidebarInset } from "../ui/sidebar";
 import { Activity, CreditCard, IndianRupee, Users } from "lucide-react";
 import { Chart1 } from "./Chart1";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import useErrorLogout from "../../hooks/use-error-logout";
+import { useState } from "react";
+import { useEffect } from "react";
+import axios from "axios";
+import { set } from "mongoose";
 const Analytics = () => {
+  const [metrics, setMetrics] = useState({});
+  const {handleErrorLogout} = useErrorLogout();
+  useEffect(() => {
+    const getMetrics = async () => {
+      try {
+        const res=await axios.get(import.meta.env.VITE_API_URL + "/get-metrics", {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        });
+        const data=await res.data;
+        setMetrics(data.data);
+        
+      } catch (error) {
+        handleErrorLogout(error);
+      }
+    }
+    getMetrics();
+  },[]);
   return (
     <div className="w-screen md:w-[90vw] xl:w-[80vw] flex justify-center items-center">
       <SidebarInset>
@@ -16,9 +37,9 @@ const Analytics = () => {
                 <IndianRupee size={16} />
               </div>
               <div className="grid mt-2">
-                <span className="text-2xl font-bold">₹4376</span>
+                <span className="text-2xl font-bold">₹{metrics?.totalSales?.count}</span>
                 <span className="text-xs font-semibold text-gray-400">
-                  + 80% from Last Month
+                  + {metrics?.totalSales?.growth}% from Last Month
                 </span>
               </div>
             </div>
@@ -29,9 +50,9 @@ const Analytics = () => {
                 <Users size={16} />
               </div>
               <div className="grid mt-2">
-                <span className="text-2xl font-bold">+ 500</span>
+                <span className="text-2xl font-bold">+ {metrics.users?.count}</span>
                 <span className="text-xs font-semibold text-gray-400">
-                  + 80% from Last Month
+                  + {metrics?.users?.growth}% from Last Month
                 </span>
               </div>
             </div>
@@ -42,9 +63,9 @@ const Analytics = () => {
                 <CreditCard size={16} />
               </div>
               <div className="grid mt-2">
-                <span className="text-2xl font-bold">₹4376</span>
+                <span className="text-2xl font-bold">₹{metrics?.sales?.count}</span>
                 <span className="text-xs font-semibold text-gray-400">
-                  + 80% from Last Month
+                  + {metrics?.sales?.growth}% from Last Month
                 </span>
               </div>
             </div>
@@ -55,58 +76,38 @@ const Analytics = () => {
                 <Activity size={16} />
               </div>
               <div className="grid mt-2">
-                <span className="text-2xl font-bold">76</span>
+                <span className="text-2xl font-bold">{metrics?.activeNow?.count}</span>
                 <span className="text-xs font-semibold text-gray-400">
-                  + 80% from Last Month
+                  + {metrics?.activeNow?.growth}% from Last Month
                 </span>
               </div>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
-            <Chart1 />
+            <Chart1 metrics={metrics} />
             <div className="p-5 bg-muted/50 rounded-lg">
               <h3 className="font-bold text-xl">Recent Sales</h3>
               <p className="text-sm mt-1 my-8">You make 40 sales this Month</p>
               <div className="flex flex-1 flex-col gap-4">
-                <div className="h-fit py-1 w-full xl:w-[30rem] rounded-lg flex justify-between items-center">
+               {
+                metrics?.recentSales?.users?.map((user,index)=>(
+                   <div key={user._id} className="h-fit py-1 w-full xl:w-[30rem] rounded-lg flex justify-between items-center">
                   <div className="flex gap-4">
                     <Avatar>
                       <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>CN</AvatarFallback>
+                      <AvatarFallback>{user?.userId?.name?.charAt(0).toUpperCase()  }</AvatarFallback>
                     </Avatar>
                     <div >
-                      <h3 className="text-md dont-bold capitalize">Chaitanya Muley</h3>
-                      <p className="text-sm text-gray-400 ">chaitanya123@gmail.com</p>
+                      <h3 className="text-md dont-bold capitalize">{user?.userId?.name} </h3>
+                      <p className="text-sm text-gray-400 ">{user?.userId?.email}</p>
                     </div>
                   </div>
-                  <h3 className="font-bold">₹4376</h3>
+                  <h3 className="font-bold">₹{user?.amount}</h3>
                 </div>
-                <div className="h-fit py-1 w-full xl:w-[30rem] rounded-lg flex justify-between items-center">
-                  <div className="flex gap-4">
-                    <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div >
-                      <h3 className="text-md dont-bold capitalize">Chaitanya Muley</h3>
-                      <p className="text-sm text-gray-400 ">chaitanya123@gmail.com</p>
-                    </div>
-                  </div>
-                  <h3 className="font-bold">₹4376</h3>
-                </div>
-                <div className="h-fit py-1 w-full xl:w-[30rem] rounded-lg flex justify-between items-center">
-                  <div className="flex gap-4">
-                    <Avatar>
-                      <AvatarImage src="https://github.com/shadcn.png" />
-                      <AvatarFallback>CN</AvatarFallback>
-                    </Avatar>
-                    <div >
-                      <h3 className="text-md dont-bold capitalize">Chaitanya Muley</h3>
-                      <p className="text-sm text-gray-400 ">chaitanya123@gmail.com</p>
-                    </div>
-                  </div>
-                  <h3 className="font-bold">₹4376</h3>
-                </div>
+                ))
+               }
+                
+                
               </div>
             </div>
           </div>
