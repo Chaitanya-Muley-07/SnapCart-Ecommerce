@@ -7,7 +7,7 @@ import useErrorLogout from "../../hooks/use-error-logout";
 import { useState } from "react";
 import { useEffect } from "react";
 import axios from "axios";
-import { set } from "mongoose";
+
 const Analytics = () => {
   const [metrics, setMetrics] = useState({});
   const {handleErrorLogout} = useErrorLogout();
