@@ -16,7 +16,7 @@ const createReview = async (req, res) => {
     });
     newReview.populate("userId", "name");
 
-    let product = await Product.findByIdandUpdate(productId, {
+    let product = await Product.findByIdAndUpdate(productId, {
       $push: { reviews: newReview._id },
     });
 
@@ -41,9 +41,9 @@ const updateReview = async (req, res) => {
   const { updatedReview } = req.body;
 
   try {
-    let review = await Review.findByIdandUpdate(
+    let review = await Review.findByIdAndUpdate(
       id,
-      { review: updateReview },
+      { review: updatedReview },
       { new: true }
     );
     await review.populate("UserId", "name");
@@ -68,7 +68,7 @@ const replyReview = async (req, res) => {
   const { id } = req.params;
   try {
     const { review } = req.body;
-    let foundReview = await findByIdandUpdate(
+    let foundReview = await Review.findByIdAndUpdate(
       id,
       { $push: { replies: { review, userId } } },
       { new: true }

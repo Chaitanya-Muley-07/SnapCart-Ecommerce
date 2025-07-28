@@ -299,7 +299,7 @@ const Product = () => {
         </main>
 
         {/*review section*/}
-        <ReviewComponent />
+        <ReviewComponent productId={product?._id} />
       </div>
     </>
   );
