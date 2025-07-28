@@ -162,11 +162,7 @@ const getProductByName = async (req, res) => {
   const { name } = req.params;
 
   try {
-    const product = await Product.findOne({ name 
-      :{
-        $regex:new RegExp(name,"i"),
-      }
-    });
+    const product = await Product.findOne({ name });
 
     if (!product)
       return res
