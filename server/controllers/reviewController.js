@@ -46,7 +46,7 @@ const updateReview = async (req, res) => {
       { review: updatedReview },
       { new: true }
     );
-    await review.populate("UserId", "name");
+    await review.populate("userId", "name");
     if (!review) {
       return res
         .status(404)

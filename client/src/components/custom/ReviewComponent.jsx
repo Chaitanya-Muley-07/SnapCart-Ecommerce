@@ -297,7 +297,7 @@ const ReviewComponent = ({ productId }) => {
                           review: review.review,
                         })
                       }
-                      className="flex items-center gap-2 border-b bg-transparent hover:border-customYellow cursor-pointer"
+                      className="flex items-center gap-2 border-b bg-transparent hover:border-customYellow cursor-pointer text-customYellow"
                     >
                       <Edit2 size={15} />
                       <span>Edit</span>
